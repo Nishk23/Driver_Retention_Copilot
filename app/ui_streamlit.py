@@ -374,6 +374,11 @@ def _render_result(result: dict) -> None:
             st.code(json.dumps(result, indent=2, ensure_ascii=False), language="json")
 
 
+def _reset_query() -> None:
+    st.session_state.query = DEFAULT_QUERY
+    st.session_state.result = None
+
+
 with st.sidebar:
     st.markdown("### Session")
     session_id = st.text_input("Session ID", value="streamlit-demo")
@@ -400,10 +405,7 @@ with st.container():
     with run_col:
         run_clicked = st.button("Run analysis", type="primary", width="stretch")
     with reset_col:
-        if st.button("Reset", width="stretch"):
-            st.session_state.query = DEFAULT_QUERY
-            st.session_state.result = None
-            st.rerun()
+        st.button("Reset", width="stretch", on_click=_reset_query)
 
 if run_clicked:
     memory = load_memory(session_id) if use_memory else {}
