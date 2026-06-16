@@ -1,4 +1,9 @@
 .env
 __pycache__/
 rag/chroma_db/
-outputs/
+outputs/*
+!outputs/evaluation_trace.json
+!outputs/.gitkeep
+outputs/memory/
+.pytest_cache/
+.idea/

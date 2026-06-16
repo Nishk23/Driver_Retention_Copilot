@@ -161,34 +161,36 @@ def generate_retention_plan(state: DriverCopilotState) -> RetentionPlan:
                 incentive = action.get("incentive_id") or ""
                 new_at = at
 
+                non_monetary_map = {
+                    "voucher": "future_quest",
+                    "fast_track": "future_quest",
+                    "airport_fast_track": "future_quest",
+                    "queue_fast_track": "future_quest",
+                    "queue_fast_track_voucher": "future_quest",
+                    "ticket_response": "support_escalation",
+                    "ticket_reply": "support_escalation",
+                    "outreach_call": "follow_up_call",
+                    "follow_up": "follow_up_call",
+                    "follow_up_call": "follow_up_call",
+                    "operations_escalation": "support_escalation",
+                    "escalate": "support_escalation",
+                    "escalate_ticket": "support_escalation",
+                    "flag_account": "support_escalation",
+                    "acknowledge": "manager_message",
+                    "apology": "apology_message",
+                    "monitoring": "monitor_driver",
+                    "monitor": "monitor_driver",
+                    "monitor_driver": "monitor_driver",
+                }
                 monetary_synonyms = {"credit", "incentive_credit", "incentive", "goodwill", "cash_credit", "compensation"}
                 short_fare_ids = {"INC-001", "INC-002"}
-                if at in monetary_synonyms or action.get("amount") is not None:
+                if at in non_monetary_map:
+                    new_at = non_monetary_map[at]
+                elif at in monetary_synonyms or action.get("amount") is not None:
                     if incentive in short_fare_ids or issue_type == "airport_short_fare":
                         new_at = "short_fare_credit"
                     else:
                         new_at = "goodwill_credit"
-                else:
-                    non_monetary_map = {
-                        "voucher": "future_quest",
-                        "fast_track": "future_quest",
-                        "airport_fast_track": "future_quest",
-                        "queue_fast_track": "future_quest",
-                        "queue_fast_track_voucher": "future_quest",
-                        "ticket_response": "support_escalation",
-                        "ticket_reply": "support_escalation",
-                        "outreach_call": "follow_up_call",
-                        "follow_up": "follow_up_call",
-                        "follow_up_call": "follow_up_call",
-                        "operations_escalation": "support_escalation",
-                        "escalate": "support_escalation",
-                        "flag_account": "support_escalation",
-                        "monitoring": "monitor_driver",
-                        "monitor": "monitor_driver",
-                        "monitor_driver": "monitor_driver",
-                    }
-                    if at in non_monetary_map:
-                        new_at = non_monetary_map[at]
 
                 new_action = dict(action)
                 new_action["action_type"] = new_at

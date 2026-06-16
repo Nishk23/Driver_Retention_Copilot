@@ -19,7 +19,22 @@ TRACE_PATH = PROJECT_ROOT / "outputs" / "evaluation_trace.json"
 
 def normalize_issue_type(text: str) -> str:
     lowered = (text or "").lower()
-    if "airport" in lowered and ("short" in lowered or "1.5km" in lowered or "1.5 km" in lowered or "queue" in lowered):
+    airport_terms = (
+        "airport",
+        "heathrow",
+        "gatwick",
+        "stansted",
+        "luton",
+        "lhr",
+        "lgw",
+        "lcy",
+    )
+    airport_signal = any(term in lowered for term in airport_terms)
+    short_fare_signal = any(
+        term in lowered
+        for term in ("short", "1.5km", "1.5 km", "queue", "wait", "fare", "mile", "miles", "km")
+    )
+    if airport_signal and short_fare_signal:
         return "airport_short_fare"
     if "bonus" in lowered or "incentive" in lowered or "quest" in lowered:
         return "bonus_confusion"
@@ -76,6 +91,14 @@ def load_driver_profile_node(state: DriverCopilotState) -> dict:
     if not profile or profile.get("error"):
         return {
             "driver_profile": profile,
+            "critic_verdict": {
+                "status": "needs_review",
+                "violations": [],
+                "required_fixes": ["Resolve the driver against driver_profiles.json before recommending compensation."],
+                "warnings": ["Driver profile was not found."],
+                "policy_evidence": [],
+                "explanation": "Driver profile lookup failed, so the system cannot safely approve a retention package.",
+            },
             "trace": [{"step": "driver_profile_retrieval", "data": {"status": "missing", "profile": profile}}],
         }
     return {
@@ -171,6 +194,13 @@ def revision_router(state: DriverCopilotState) -> Literal[
     if status == "rejected" and retry_count < max_retries:
         return "increment_retry_node"
     return "safe_fallback_final_response_node"
+
+
+def driver_profile_router(state: DriverCopilotState) -> Literal["load_support_tickets_node", "safe_fallback_final_response_node"]:
+    profile = state.get("driver_profile") or {}
+    if not profile or profile.get("error"):
+        return "safe_fallback_final_response_node"
+    return "load_support_tickets_node"
 
 
 def increment_retry_node(state: DriverCopilotState) -> dict:
@@ -284,7 +314,19 @@ def save_trace_node(state: DriverCopilotState) -> dict:
 
 def _fallback_run(initial_state: DriverCopilotState) -> DriverCopilotState:
     state = {**initial_state, "trace": list(initial_state.get("trace", []))}
-    for node in [extract_context_node, load_driver_profile_node, load_support_tickets_node, load_incentives_node]:
+    for node in [extract_context_node, load_driver_profile_node]:
+        result = node(state)
+        state.update({k: v for k, v in result.items() if k != "trace"})
+        state["trace"].extend(result.get("trace", []))
+    if driver_profile_router(state) == "safe_fallback_final_response_node":
+        result = safe_fallback_final_response_node(state)
+        state.update({k: v for k, v in result.items() if k != "trace"})
+        state["trace"].extend(result.get("trace", []))
+        save_result = save_trace_node(state)
+        state["trace"].extend(save_result.get("trace", []))
+        return state
+
+    for node in [load_support_tickets_node, load_incentives_node]:
         result = node(state)
         state.update({k: v for k, v in result.items() if k != "trace"})
         state["trace"].extend(result.get("trace", []))
@@ -329,7 +371,14 @@ def build_workflow():
 
     graph.add_edge(START, "extract_context_node")
     graph.add_edge("extract_context_node", "load_driver_profile_node")
-    graph.add_edge("load_driver_profile_node", "load_support_tickets_node")
+    graph.add_conditional_edges(
+        "load_driver_profile_node",
+        driver_profile_router,
+        {
+            "load_support_tickets_node": "load_support_tickets_node",
+            "safe_fallback_final_response_node": "safe_fallback_final_response_node",
+        },
+    )
     graph.add_edge("load_support_tickets_node", "load_incentives_node")
     graph.add_edge("load_incentives_node", "strategist_node")
     graph.add_edge("strategist_node", "critic_node")

@@ -29,6 +29,16 @@ def test_credit_equal_to_cap_is_approved():
     assert result["status"] == "approved"
 
 
+def test_silver_and_bronze_short_fare_cap_is_15_gbp():
+    for tier in ("Silver", "Bronze"):
+        result = validate_plan_against_policy(
+            plan([{"action_type": "short_fare_credit", "amount": 25, "currency": "GBP"}], tier=tier),
+            POLICY_CHUNKS,
+        )
+        assert result["status"] == "rejected"
+        assert result["violations"][0]["allowed_amount"] == 15
+
+
 def test_missing_policy_evidence_still_enforces_cap():
     result = validate_plan_against_policy(
         plan([{"action_type": "short_fare_credit", "amount": 50, "currency": "GBP"}]),
