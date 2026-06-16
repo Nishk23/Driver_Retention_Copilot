@@ -55,6 +55,8 @@ python -m rag.ingest_policy
 
 If Chroma or sentence-transformers are not installed, the retriever falls back to deterministic keyword retrieval over the PDF text, but production/demo setup should run ingestion.
 
+By default the runtime uses local keyword retrieval over the extracted policy chunks to avoid demo-time model download failures. Set `USE_CHROMA_RAG=true` in `.env` to force Chroma semantic retrieval after the embedding model is available locally.
+
 ## CLI
 
 ```bash

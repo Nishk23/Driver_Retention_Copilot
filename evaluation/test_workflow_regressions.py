@@ -58,3 +58,41 @@ def test_strategist_keeps_zero_value_voucher_non_monetary(monkeypatch):
         }
     )
     assert plan.proposed_actions[0].action_type == "future_quest"
+
+
+def test_strategist_revises_rejected_short_fare_credit_to_policy_cap(monkeypatch):
+    raw_plan = {
+        "risk_level": "high",
+        "issue_type": "airport_short_fare",
+        "reasoning": "Test over-cap revision.",
+        "evidence_summary": ["Airport short fare evidence."],
+        "proposed_actions": [
+            {
+                "action_type": "credit",
+                "amount": 50,
+                "currency": "GBP",
+                "reason": "LLM repeated the original over-cap amount.",
+                "incentive_id": "INC-002",
+            }
+        ],
+        "manager_message": "Acknowledge the driver.",
+        "assumptions": [],
+    }
+
+    monkeypatch.setattr("agents.strategist_agent.call_llm", lambda *_args, **_kwargs: json.dumps(raw_plan))
+    plan = generate_retention_plan(
+        {
+            "user_query": "Driver Maria has an airport short fare.",
+            "driver_profile": {"driver_id": "D-LON-001", "name": "Maria S.", "loyalty_tier": "Gold"},
+            "support_tickets": [],
+            "issue_type": "airport_short_fare",
+            "incentive_options": {},
+            "critic_verdict": {
+                "status": "rejected",
+                "required_fixes": ["Reduce short_fare_credit to 25 GBP or below."],
+            },
+            "retry_count": 1,
+        }
+    )
+    assert plan.proposed_actions[0].action_type == "short_fare_credit"
+    assert plan.proposed_actions[0].amount == 25

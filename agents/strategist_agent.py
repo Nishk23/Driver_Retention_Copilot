@@ -24,6 +24,38 @@ def _matching_incentive(options: dict, *ids: str) -> dict | None:
     return None
 
 
+def _short_fare_cap_for_profile(profile: dict) -> float:
+    return POLICY_CAPS["short_fare_credit"]["tier_caps"].get(
+        profile.get("loyalty_tier"), POLICY_CAPS["short_fare_credit"]["max_amount"]
+    )
+
+
+def _apply_deterministic_revision(parsed_plan: dict, state: DriverCopilotState) -> dict:
+    verdict = state.get("critic_verdict") or {}
+    if verdict.get("status") != "rejected":
+        return parsed_plan
+
+    cap = _short_fare_cap_for_profile(state.get("driver_profile") or {})
+    revised = dict(parsed_plan)
+    actions = []
+    for action in revised.get("proposed_actions") or []:
+        updated = dict(action)
+        if updated.get("action_type") == "short_fare_credit" and updated.get("amount") is not None:
+            if float(updated["amount"]) > cap:
+                updated["amount"] = cap
+                updated["currency"] = "GBP"
+                updated["reason"] = (
+                    f"Deterministically revised after critic feedback to comply with the {cap:.0f} GBP "
+                    "airport short-fare compensation cap."
+                )
+        actions.append(updated)
+    revised["proposed_actions"] = actions
+    assumptions = list(revised.get("assumptions") or [])
+    assumptions.append("Applied deterministic cap correction after Compliance Critic rejection.")
+    revised["assumptions"] = assumptions
+    return revised
+
+
 def _deterministic_plan(state: DriverCopilotState) -> RetentionPlan:
     profile = state.get("driver_profile") or {}
     issue_type = state.get("issue_type") or "unknown"
@@ -45,9 +77,7 @@ def _deterministic_plan(state: DriverCopilotState) -> RetentionPlan:
     actions: list[dict] = []
     assumptions: list[str] = []
     if issue_type == "airport_short_fare":
-        cap = POLICY_CAPS["short_fare_credit"]["tier_caps"].get(
-            profile.get("loyalty_tier"), POLICY_CAPS["short_fare_credit"]["max_amount"]
-        )
+        cap = _short_fare_cap_for_profile(profile)
         premium = _matching_incentive(incentives, "INC-002")
         standard = _matching_incentive(incentives, "INC-001")
         if retry_count == 0 and profile.get("loyalty_tier") == "Gold" and premium:
@@ -201,6 +231,7 @@ def generate_retention_plan(state: DriverCopilotState) -> RetentionPlan:
             return new_parsed
 
         parsed = _normalize_plan_actions(parsed)
+        parsed = _apply_deterministic_revision(parsed, state)
         return RetentionPlan.model_validate(parsed)
     except Exception:
         return _deterministic_plan(state)

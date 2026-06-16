@@ -45,6 +45,9 @@ def _keyword_retrieve(query: str, top_k: int) -> list[dict]:
 
 
 def retrieve_policy_chunks(query: str, top_k: int = 5) -> list[dict]:
+    if os.getenv("USE_CHROMA_RAG", "false").lower() not in {"1", "true", "yes"}:
+        return _keyword_retrieve(query, top_k)
+
     try:
         collection = load_or_create_vector_store(str(DEFAULT_PERSIST_DIR))
         if collection.count() == 0:
