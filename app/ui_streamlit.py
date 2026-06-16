@@ -200,6 +200,10 @@ def _ticket_rows(tickets: list[dict]) -> list[dict]:
     return rows
 
 
+def _table(rows: list[dict]) -> pd.DataFrame:
+    return pd.DataFrame(rows).fillna("-").astype(str)
+
+
 def _render_metric(label: str, value: str) -> str:
     return f"""
     <div class="metric-card">
@@ -300,11 +304,11 @@ def _render_result(result: dict) -> None:
                 "Short fares 30d": profile.get("airport_short_fare_count_30d"),
             }
             st.dataframe(
-                pd.DataFrame(
+                _table(
                     [{"Field": key, "Value": _display(value)} for key, value in context.items()]
                 ),
                 hide_index=True,
-                use_container_width=True,
+                width="stretch",
             )
 
             st.markdown('<div class="section-title">Decision</div>', unsafe_allow_html=True)
@@ -317,7 +321,7 @@ def _render_result(result: dict) -> None:
         st.markdown('<div class="section-title">Support tickets</div>', unsafe_allow_html=True)
         ticket_rows = _ticket_rows(tickets)
         if ticket_rows:
-            st.dataframe(pd.DataFrame(ticket_rows), hide_index=True, use_container_width=True, height=280)
+            st.dataframe(_table(ticket_rows), hide_index=True, width="stretch", height=280)
         else:
             st.info("No matching support tickets found.")
 
@@ -352,7 +356,7 @@ def _render_result(result: dict) -> None:
         with st.expander("Action table"):
             rows = _action_rows(plan)
             if rows:
-                st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+                st.dataframe(_table(rows), hide_index=True, width="stretch")
 
     with trace_tab:
         steps = [
@@ -363,7 +367,7 @@ def _render_result(result: dict) -> None:
             }
             for entry in trace
         ]
-        st.dataframe(pd.DataFrame(steps), hide_index=True, use_container_width=True)
+        st.dataframe(_table(steps), hide_index=True, width="stretch")
         with st.expander("Raw final answer"):
             st.text(result.get("final_answer", "No final answer generated."))
         with st.expander("Raw JSON payload"):
@@ -394,9 +398,9 @@ with st.container():
     query = st.text_area("Manager question", key="query", height=118)
     run_col, reset_col, _ = st.columns([0.14, 0.14, 0.72])
     with run_col:
-        run_clicked = st.button("Run analysis", type="primary", use_container_width=True)
+        run_clicked = st.button("Run analysis", type="primary", width="stretch")
     with reset_col:
-        if st.button("Reset", use_container_width=True):
+        if st.button("Reset", width="stretch"):
             st.session_state.query = DEFAULT_QUERY
             st.session_state.result = None
             st.rerun()
