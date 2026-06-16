@@ -1,114 +1,153 @@
 {
-  "summary": {
-    "seeded_self_correction_passed": true,
-    "live_runs": 0
-  },
-  "seeded_self_correction_trace": [
+  "trace": [
     {
-      "step": "seeded_invalid_plan",
+      "step": "context_extraction",
       "data": {
-        "risk_level": "high",
-        "issue_type": "airport_short_fare",
-        "driver_tier": "Gold",
-        "reasoning": "Seeded invalid plan for deterministic self-correction evaluation.",
-        "evidence_summary": [
-          "Driver experienced repeated airport short fare issue."
-        ],
-        "proposed_actions": [
+        "driver_id": "D-LON-063",
+        "driver_name": "Darcie",
+        "issue_type": "technical_issue"
+      }
+    },
+    {
+      "step": "driver_profile_retrieval",
+      "data": {
+        "status": "found",
+        "driver_id": "D-LON-063",
+        "name": "Darcie C.",
+        "tier": "Silver"
+      }
+    },
+    {
+      "step": "support_ticket_retrieval",
+      "data": {
+        "count": 1,
+        "tickets": [
           {
-            "action_type": "short_fare_credit",
-            "amount": 50,
-            "currency": "GBP",
-            "reason": "Seeded over-cap compensation to test Critic rejection."
-          },
-          {
-            "action_type": "manager_message",
-            "description": "Manager should personally acknowledge the issue."
+            "ticket_id": "T-1039",
+            "driver_id": "D-LON-063",
+            "timestamp": "2026-03-02 11:00",
+            "category": "Technical",
+            "message": "GPS is very glitchy in the City of London today. Missing many jobs.",
+            "status": "OPEN"
           }
-        ],
-        "manager_message": "We will compensate the driver for the poor airport experience.",
-        "assumptions": [
-          "This plan is intentionally invalid for test purposes."
         ]
       }
     },
     {
-      "step": "critic_verdict_seeded_invalid",
+      "step": "incentive_retrieval",
       "data": {
-        "status": "rejected",
-        "violations": [
+        "timestamp": "2026-06-16T20:07:14.914778",
+        "city": "London",
+        "driver_tier": "Silver",
+        "tenure_months": 18,
+        "incentives": [
           {
-            "action": "short_fare_credit",
-            "proposed_amount": 50.0,
-            "allowed_amount": 25.0,
-            "reason": "Proposed amount exceeds Airport Short Fare compensation cap."
+            "id": "INC-003",
+            "type": "CREDIT",
+            "category": "Technical",
+            "name": "Geofence/GPS Glitch Credit",
+            "value": 10.0,
+            "currency": "GBP",
+            "min_tier": "Bronze"
+          },
+          {
+            "id": "INC-004",
+            "type": "CREDIT",
+            "category": "Technical",
+            "name": "Priority Technical Support Access",
+            "value": 0.0,
+            "currency": "GBP",
+            "min_tier": "Silver",
+            "description": "Moves driver to the front of the dev-ops fix queue."
           }
         ],
-        "warnings": [],
-        "required_fixes": [
-          "Reduce short_fare_credit to 25 GBP or below."
-        ],
-        "policy_evidence": [
-          {
-            "page": 1,
-            "chunk_id": "seeded",
-            "text": "Airport Short Fares GOLD TIER CAP: GBP 25.",
-            "score": null
-          }
-        ],
-        "explanation": "One or more actions violate deterministic policy caps."
+        "issue_type": "technical_issue",
+        "driver_profile_summary": {
+          "driver_id": "D-LON-063",
+          "tier": "Silver",
+          "tenure_months": 18
+        }
       }
     },
     {
-      "step": "deterministic_revision",
+      "step": "strategist_plan_v1",
       "data": {
-        "risk_level": "high",
-        "issue_type": "airport_short_fare",
-        "driver_tier": "Gold",
-        "reasoning": "Seeded invalid plan for deterministic self-correction evaluation.",
+        "risk_level": "low",
+        "issue_type": "technical_issue",
+        "reasoning": "The driver shows retention risk based on current sentiment, repeated complaint pattern, and actual ticket evidence.",
         "evidence_summary": [
-          "Driver experienced repeated airport short fare issue."
+          "Profile sentiment: Neutral - earnings are fine but app is buggy.",
+          "Airport short-fare count in 30d: 3",
+          "T-1039: Technical - GPS is very glitchy in the City of London today. Missing many jobs."
         ],
         "proposed_actions": [
           {
-            "action_type": "short_fare_credit",
-            "amount": 25.0,
+            "action_type": "technical_glitch_credit",
+            "amount": 10.0,
             "currency": "GBP",
-            "reason": "Deterministically revised to the verified policy cap."
+            "description": null,
+            "reason": "Confirmed technical/GPS issue compensation.",
+            "incentive_id": "INC-003"
+          },
+          {
+            "action_type": "priority_support",
+            "amount": null,
+            "currency": null,
+            "description": "Escalate recurring geofence issue.",
+            "reason": null,
+            "incentive_id": null
           },
           {
             "action_type": "manager_message",
-            "description": "Manager should personally acknowledge the issue."
+            "amount": null,
+            "currency": null,
+            "description": "Manager should personally acknowledge the repeated issue and confirm the recovery action.",
+            "reason": null,
+            "incentive_id": null
+          },
+          {
+            "action_type": "monitor_driver",
+            "amount": null,
+            "currency": null,
+            "description": "Monitor status and support tickets for 7 days after the recovery action.",
+            "reason": null,
+            "incentive_id": null
           }
         ],
-        "manager_message": "We will compensate the driver for the poor airport experience.",
-        "assumptions": [
-          "This plan is intentionally invalid for test purposes."
-        ]
+        "manager_message": "Acknowledge Darcie C.'s repeated issue, explain the policy-compliant recovery, and confirm follow-up monitoring.",
+        "assumptions": []
       }
     },
     {
-      "step": "critic_verdict_seeded_revised",
+      "step": "critic_verdict_v1",
       "data": {
-        "status": "approved",
+        "status": "needs_review",
         "violations": [],
-        "warnings": [],
-        "required_fixes": [],
+        "required_fixes": [
+          "Route unknown monetary action to manual review or map it to a known policy rule."
+        ],
+        "warnings": [
+          "Unknown monetary action requires manual review: goodwill_credit."
+        ],
         "policy_evidence": [
           {
             "page": 1,
-            "chunk_id": "seeded",
-            "text": "Airport Short Fares GOLD TIER CAP: GBP 25.",
-            "score": null
+            "chunk_id": "page-1-chunk-1",
+            "text": "FREENOW  Internal  Policy:  UK  Driver  Retention  &  Recovery  Guidelines  \nSection  A:  Compensation  Caps  &  Stacking  \n1.  Global  Monthly  Cap:  No  automated  retention  package  may  exceed  \u00a3150.00  in  total  \nvalue\n \nper\n \ndriver,\n \nper\n \ncalendar\n \nmonth.\n 2.  Credit  Stacking:  A  driver  may  not  receive  more  than  two  (2)  immediate  credits  \nwithin\n \nthe\n \nsame\n \n24-hour\n \nwindow.\n \nIf\n \na\n \nthird\n \nissue\n \noccurs,\n \nthe\n \nsystem\n \nmust\n \nescalate\n \nto\n \na\n \nhuman\n \nCity\n \nManager.\n 3.  Tier  Multipliers:  Goodwill  credits  (Category:  Churn)  are  strictly  reserved  for  Gold  \nand\n \nSilver\n \ntiers\n \nonly.\n \nSection  B:  Specific  Issue  Resolutions  \n1.  Airport  Short  Fares  (SFP):  *  Applicable  only  if  wait  time  >90  mins  and  trip  distance  \n<3km.\n \u25cb  GOLD  TIER  CAP:  \u00a325.00  maximum  per  instance.  (Note:  The  AI  must  NOT  \nuse\n INC-002 (\u00a350)  for  standard  short-fare  recovery;  that  is  reserved  for  \nmulti-day\n \nsystemic\n \nfailures).\n \u25cb  SILVER/BRONZE  CAP:  \u00a315.00  maximum  per  instance.  2.  Technical  &  GPS  Glitches:  *  Maximum  compensation  is  \u00a310.00  per  confirmed  glitch  \n(INC-003).  \u25cb  Priority  Support  Access  (INC-004)  should  be  offered  for  recurring  geofence  \nissues\n \n(>2\n \ntickets\n \nin\n \n7\n \ndays).\n 3.  New  Starters  (Tenure  <3  Months):  \u25cb  Priority  should  be  given  to  Commission  Shields  (INC-006)  rather  than  \ndirect\n \ncredits\n \nto\n \nencourage\n \ncontinued\n \napp\n \nusage.\n 4.  Infeasible  Quests:  \u25cb  If  a  driver  completes  >80%  of  a  Quest  but  fails  due  to  documented  low  \ndemand\n \n(diagnostics\n \nconfirm\n \n<1.5\n \noffers/hour),\n \na\n \nGoodwill\n \nGesture\n \nof\n \n\u00a320.00\n \nis\n \npermitted.",
+            "score": 11.0
           }
         ],
-        "explanation": "All monetary actions are within deterministic policy caps, and non-monetary actions are allowlisted or harmless."
+        "explanation": "Unknown monetary actions cannot be approved automatically."
+      }
+    },
+    {
+      "step": "safe_fallback_final_response",
+      "data": {
+        "final_answer": "Driver Retention Recommendation\n\nFinal Decision:\n- Needs manual review\n\nReason:\n- Unknown monetary actions cannot be approved automatically.\n- Required fixes: ['Route unknown monetary action to manual review or map it to a known policy rule.']\n- Warnings: ['Unknown monetary action requires manual review: goodwill_credit.']"
       }
     }
   ],
-  "live_runs": [
-    {
-      "skipped": "OPENROUTER_API_KEY or MODEL_NAME not configured; live workflow skipped."
-    }
-  ]
+  "final_answer": "Driver Retention Recommendation\n\nFinal Decision:\n- Needs manual review\n\nReason:\n- Unknown monetary actions cannot be approved automatically.\n- Required fixes: ['Route unknown monetary action to manual review or map it to a known policy rule.']\n- Warnings: ['Unknown monetary action requires manual review: goodwill_credit.']",
+  "driver_id": "D-LON-063",
+  "issue_type": "technical_issue"
 }
