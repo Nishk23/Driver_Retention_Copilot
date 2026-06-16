@@ -1,0 +1,114 @@
+{
+  "summary": {
+    "seeded_self_correction_passed": true,
+    "live_runs": 0
+  },
+  "seeded_self_correction_trace": [
+    {
+      "step": "seeded_invalid_plan",
+      "data": {
+        "risk_level": "high",
+        "issue_type": "airport_short_fare",
+        "driver_tier": "Gold",
+        "reasoning": "Seeded invalid plan for deterministic self-correction evaluation.",
+        "evidence_summary": [
+          "Driver experienced repeated airport short fare issue."
+        ],
+        "proposed_actions": [
+          {
+            "action_type": "short_fare_credit",
+            "amount": 50,
+            "currency": "GBP",
+            "reason": "Seeded over-cap compensation to test Critic rejection."
+          },
+          {
+            "action_type": "manager_message",
+            "description": "Manager should personally acknowledge the issue."
+          }
+        ],
+        "manager_message": "We will compensate the driver for the poor airport experience.",
+        "assumptions": [
+          "This plan is intentionally invalid for test purposes."
+        ]
+      }
+    },
+    {
+      "step": "critic_verdict_seeded_invalid",
+      "data": {
+        "status": "rejected",
+        "violations": [
+          {
+            "action": "short_fare_credit",
+            "proposed_amount": 50.0,
+            "allowed_amount": 25.0,
+            "reason": "Proposed amount exceeds Airport Short Fare compensation cap."
+          }
+        ],
+        "warnings": [],
+        "required_fixes": [
+          "Reduce short_fare_credit to 25 GBP or below."
+        ],
+        "policy_evidence": [
+          {
+            "page": 1,
+            "chunk_id": "seeded",
+            "text": "Airport Short Fares GOLD TIER CAP: GBP 25.",
+            "score": null
+          }
+        ],
+        "explanation": "One or more actions violate deterministic policy caps."
+      }
+    },
+    {
+      "step": "deterministic_revision",
+      "data": {
+        "risk_level": "high",
+        "issue_type": "airport_short_fare",
+        "driver_tier": "Gold",
+        "reasoning": "Seeded invalid plan for deterministic self-correction evaluation.",
+        "evidence_summary": [
+          "Driver experienced repeated airport short fare issue."
+        ],
+        "proposed_actions": [
+          {
+            "action_type": "short_fare_credit",
+            "amount": 25.0,
+            "currency": "GBP",
+            "reason": "Deterministically revised to the verified policy cap."
+          },
+          {
+            "action_type": "manager_message",
+            "description": "Manager should personally acknowledge the issue."
+          }
+        ],
+        "manager_message": "We will compensate the driver for the poor airport experience.",
+        "assumptions": [
+          "This plan is intentionally invalid for test purposes."
+        ]
+      }
+    },
+    {
+      "step": "critic_verdict_seeded_revised",
+      "data": {
+        "status": "approved",
+        "violations": [],
+        "warnings": [],
+        "required_fixes": [],
+        "policy_evidence": [
+          {
+            "page": 1,
+            "chunk_id": "seeded",
+            "text": "Airport Short Fares GOLD TIER CAP: GBP 25.",
+            "score": null
+          }
+        ],
+        "explanation": "All monetary actions are within deterministic policy caps, and non-monetary actions are allowlisted or harmless."
+      }
+    }
+  ],
+  "live_runs": [
+    {
+      "skipped": "OPENROUTER_API_KEY or MODEL_NAME not configured; live workflow skipped."
+    }
+  ]
+}

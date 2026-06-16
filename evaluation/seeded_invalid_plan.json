@@ -1,0 +1,25 @@
+{
+  "risk_level": "high",
+  "issue_type": "airport_short_fare",
+  "driver_tier": "Gold",
+  "reasoning": "Seeded invalid plan for deterministic self-correction evaluation.",
+  "evidence_summary": [
+    "Driver experienced repeated airport short fare issue."
+  ],
+  "proposed_actions": [
+    {
+      "action_type": "short_fare_credit",
+      "amount": 50,
+      "currency": "GBP",
+      "reason": "Seeded over-cap compensation to test Critic rejection."
+    },
+    {
+      "action_type": "manager_message",
+      "description": "Manager should personally acknowledge the issue."
+    }
+  ],
+  "manager_message": "We will compensate the driver for the poor airport experience.",
+  "assumptions": [
+    "This plan is intentionally invalid for test purposes."
+  ]
+}

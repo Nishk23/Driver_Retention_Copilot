@@ -1,0 +1,54 @@
+{
+  "last_driver_id": "D-LON-001",
+  "last_driver_name": "Maria S.",
+  "last_issue_type": "airport_short_fare",
+  "last_plan": {
+    "risk_level": "high",
+    "issue_type": "airport_short_fare",
+    "reasoning": "The driver shows retention risk based on current sentiment, repeated complaint pattern, and actual ticket evidence.",
+    "evidence_summary": [
+      "Profile sentiment: Frustrated - mentions airport queue issues specifically.",
+      "Airport short-fare count in 30d: 3",
+      "T-1007: Airport - Another short fare from LHR. 95 min wait for a \u00a38.50 trip. Something is wrong with the queue logic.",
+      "T-1001: Airport -  Heathrow T5 queue: 135 min wait, fare was \u00a36.20 to the local Hilton. This is the 3rd time this week. Please investigate."
+    ],
+    "proposed_actions": [
+      {
+        "action_type": "short_fare_credit",
+        "amount": 25.0,
+        "currency": "GBP",
+        "description": null,
+        "reason": "Revised or policy-aware airport short-fare recovery within deterministic cap.",
+        "incentive_id": "INC-001"
+      },
+      {
+        "action_type": "future_quest",
+        "amount": null,
+        "currency": null,
+        "description": "London Morning Rush Hero",
+        "reason": "Encourage the driver to re-engage after the poor airport experience.",
+        "incentive_id": "Q-101"
+      },
+      {
+        "action_type": "manager_message",
+        "amount": null,
+        "currency": null,
+        "description": "Manager should personally acknowledge the repeated issue and confirm the recovery action.",
+        "reason": null,
+        "incentive_id": null
+      },
+      {
+        "action_type": "monitor_driver",
+        "amount": null,
+        "currency": null,
+        "description": "Monitor status and support tickets for 7 days after the recovery action.",
+        "reason": null,
+        "incentive_id": null
+      }
+    ],
+    "manager_message": "Acknowledge Maria S.'s repeated issue, explain the policy-compliant recovery, and confirm follow-up monitoring.",
+    "assumptions": [
+      "Plan revised after critic feedback: ['Reduce short_fare_credit to 25 GBP or below.']"
+    ]
+  }
+}

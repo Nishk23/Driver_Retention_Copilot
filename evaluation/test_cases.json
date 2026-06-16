@@ -1,0 +1,13 @@
+[
+  {
+    "id": "maria_airport_short_fare",
+    "query": "Driver Maria D-456 just called. She waited in the airport queue for two hours only to be given a 1.5km trip. She's furious as this has happened multiple times. How do we handle this?",
+    "expected": {
+      "driver_id": "D-LON-001",
+      "issue_type": "airport_short_fare",
+      "must_retrieve_policy": "short fare",
+      "must_have_self_correction_in_seeded_eval": true,
+      "final_credit_lte": 25
+    }
+  }
+]
