@@ -20,6 +20,27 @@ DEFAULT_QUERY = (
     "a 1.5km trip. She's furious as this has happened multiple times. How do we handle this?"
 )
 
+DEMO_QUERIES = {
+    "Maria S. · Heathrow short fare": DEFAULT_QUERY,
+    "Ralph D. · Gatwick short fare": (
+        "Driver Ralph D-LON-060 just called. He waited 115 minutes in the Gatwick airport queue "
+        "and then received another very short fare. He is a Silver driver and says the airport queue "
+        "is no longer worth his time. What recovery plan should we offer?"
+    ),
+    "Darcie C. · Geofence issue": (
+        "Driver Darcie D-LON-063 says the app froze during a Soho pickup and GPS kept placing her "
+        "outside the geofence, so she could not end the trip for 20 minutes. She is worried this will "
+        "affect her earnings and rating. What should we do?"
+    ),
+}
+
+POLICY_SNAPSHOT = [
+    {"Guardrail": "Gold airport short-fare cap", "Limit": "25 GBP"},
+    {"Guardrail": "Silver/Bronze airport short-fare cap", "Limit": "15 GBP"},
+    {"Guardrail": "Monthly compensation cap", "Limit": "150 GBP"},
+    {"Guardrail": "Missing driver profile", "Limit": "Manual review"},
+]
+
 
 st.set_page_config(page_title="Driver Retention Copilot", layout="wide", initial_sidebar_state="expanded")
 
@@ -36,12 +57,22 @@ st.markdown(
       --ok: #0E7A4F;
       --warn: #B54708;
     }
-    .block-container { padding-top: 2.25rem; max-width: 1280px; }
+    .stApp { background: #FAFBFC; }
+    .block-container { padding-top: 1.4rem; max-width: 1160px; }
     [data-testid="stSidebar"] { background: #F3F5F8; border-right: 1px solid var(--line); }
+    [data-testid="stHeader"], [data-testid="stToolbar"] { background: transparent; }
     h1, h2, h3 { color: var(--ink); letter-spacing: 0; }
-    h1 { font-size: 2.2rem; margin-bottom: .25rem; }
+    h1 { font-size: 2.05rem; margin-bottom: .25rem; }
     .subtle { color: var(--muted); font-size: .95rem; }
-    .topline { height: 4px; background: var(--brand); margin: -2.25rem -4rem 1.8rem -4rem; }
+    .topline { height: 4px; background: var(--brand); margin: -1.4rem -4rem 1.4rem -4rem; }
+    .hero {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+    .hero-copy { max-width: 720px; }
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -50,6 +81,27 @@ st.markdown(
       box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
       margin-bottom: 14px;
     }
+    .input-panel { padding: 18px; }
+    .empty-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+      margin-top: 2px;
+    }
+    .case-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .case-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px 13px;
+      min-height: 104px;
+    }
+    .case-title { color: var(--ink); font-weight: 800; margin-bottom: 6px; }
+    .case-meta { color: var(--muted); font-size: .86rem; line-height: 1.35; }
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -83,6 +135,7 @@ st.markdown(
     .badge-ok { color: var(--ok); background: #ECFDF3; border-color: #ABEFC6; }
     .badge-warn { color: var(--warn); background: #FFFAEB; border-color: #FEDF89; }
     .badge-risk { color: #B42318; background: #FEF3F2; border-color: #FECDCA; }
+    .badge-neutral { color: #344054; background: #F2F4F7; border-color: #D0D5DD; }
     .action-item {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -113,15 +166,34 @@ st.markdown(
       background: #fff;
       font-size: .96rem;
     }
-    div[data-testid="stButton"] button {
+    div[data-testid="stButton"] button[kind="primary"] {
       border-radius: 8px;
       height: 42px;
       font-weight: 750;
       border: 0;
       background: var(--brand);
     }
+    div[data-testid="stButton"] button[kind="secondary"] {
+      border-radius: 8px;
+      height: 42px;
+      font-weight: 750;
+      border: 1px solid var(--line);
+      background: #FFFFFF;
+      color: var(--ink);
+    }
+    div[data-testid="stButton"] button[kind="secondary"]:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+    div[data-testid="stTextInput"] input {
+      border-radius: 8px;
+    }
     @media (max-width: 900px) {
       .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero { display: block; }
+      .empty-grid { grid-template-columns: 1fr; }
+      .case-list { grid-template-columns: 1fr; }
       .topline { margin-left: -1rem; margin-right: -1rem; }
     }
     </style>
@@ -202,6 +274,11 @@ def _ticket_rows(tickets: list[dict]) -> list[dict]:
 
 def _table(rows: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows).fillna("-").astype(str)
+
+
+def _load_selected_example() -> None:
+    st.session_state.query = DEMO_QUERIES[st.session_state.demo_case]
+    st.session_state.result = None
 
 
 def _render_metric(label: str, value: str) -> str:
@@ -374,10 +451,48 @@ def _render_result(result: dict) -> None:
             st.code(json.dumps(result, indent=2, ensure_ascii=False), language="json")
 
 
+def _render_empty_state() -> None:
+    cases_col, policy_col = st.columns([1.45, 1], gap="large")
+    with cases_col:
+        st.markdown(
+            """
+            <div class="panel">
+              <div class="section-title">Demo cases</div>
+              <div class="case-list">
+                <div class="case-card">
+                  <div class="case-title">Maria S.</div>
+                  <div class="case-meta">Gold tier · Heathrow T5 · repeated short fare · high churn risk</div>
+                </div>
+                <div class="case-card">
+                  <div class="case-title">Ralph D.</div>
+                  <div class="case-meta">Silver tier · Gatwick · 115 minute queue · policy-capped credit</div>
+                </div>
+                <div class="case-card">
+                  <div class="case-title">Darcie C.</div>
+                  <div class="case-meta">Silver tier · geofence failure · technical escalation path</div>
+                </div>
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with policy_col:
+        with st.container(border=True):
+            st.markdown('<div class="section-title">Policy snapshot</div>', unsafe_allow_html=True)
+            st.dataframe(_table(POLICY_SNAPSHOT), hide_index=True, width="stretch")
+
+
 def _reset_query() -> None:
     st.session_state.query = DEFAULT_QUERY
     st.session_state.result = None
 
+
+if "demo_case" not in st.session_state:
+    st.session_state.demo_case = next(iter(DEMO_QUERIES))
+if "query" not in st.session_state:
+    st.session_state.query = DEFAULT_QUERY
+if "result" not in st.session_state:
+    st.session_state.result = None
 
 with st.sidebar:
     st.markdown("### Session")
@@ -385,23 +500,37 @@ with st.sidebar:
     st.markdown("### Run")
     use_memory = st.toggle("Persist memory", value=True)
     use_live_llm = st.toggle("Use live LLM", value=False)
+    mode_badge = (
+        '<span class="badge badge-warn">Live LLM</span>'
+        if use_live_llm
+        else '<span class="badge badge-neutral">Deterministic</span>'
+    )
+    st.markdown(mode_badge, unsafe_allow_html=True)
     st.caption("Memory stores the last driver and issue for follow-up questions.")
 
 st.markdown('<div class="topline"></div>', unsafe_allow_html=True)
-st.title("Driver Retention Copilot")
 st.markdown(
-    '<div class="subtle">Policy-aware retention planning for Driver Relationship Managers.</div>',
+    """
+    <div class="hero">
+      <div class="hero-copy">
+        <h1>Driver Retention Copilot</h1>
+        <div class="subtle">Policy-aware retention planning for Driver Relationship Managers.</div>
+      </div>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
-if "query" not in st.session_state:
-    st.session_state.query = DEFAULT_QUERY
-if "result" not in st.session_state:
-    st.session_state.result = None
-
-with st.container():
+with st.container(border=True):
+    st.markdown('<div class="section-title">Case intake</div>', unsafe_allow_html=True)
+    st.selectbox(
+        "Example case",
+        options=list(DEMO_QUERIES),
+        key="demo_case",
+        on_change=_load_selected_example,
+    )
     query = st.text_area("Manager question", key="query", height=118)
-    run_col, reset_col, _ = st.columns([0.14, 0.14, 0.72])
+    run_col, reset_col, _ = st.columns([0.16, 0.13, 0.71])
     with run_col:
         run_clicked = st.button("Run analysis", type="primary", width="stretch")
     with reset_col:
@@ -419,12 +548,4 @@ if run_clicked:
 if st.session_state.result:
     _render_result(st.session_state.result)
 else:
-    st.markdown(
-        """
-        <div class="panel">
-          <div class="section-title">Ready for analysis</div>
-          <div class="subtle">Enter a manager question and run the copilot to retrieve driver data, tickets, incentives, and policy validation.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    _render_empty_state()
