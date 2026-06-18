@@ -36,6 +36,21 @@
   - One repair retry for malformed model output.
 - No secrets or model IDs are hardcoded.
 
+## Prompt Grounding
+
+- Agent prompts are defined in `agents/prompts.py`.
+- The Strategist prompt enforces a strict evidence boundary:
+  - Use only the provided user query, driver profile, support tickets, issue type, incentive options, and Critic feedback.
+  - Do not invent driver history, policy rules, incentive IDs, quest names, ticket details, compensation amounts, cities, tiers, or operational facts.
+  - Recommend only incentives present in `incentive_options`.
+  - Route to escalation or manual review when evidence is insufficient for a compliant monetary action.
+- The Critic prompt enforces validation boundaries:
+  - Do not approve plans based on assumptions.
+  - Do not invent policy exceptions or compensation caps.
+  - Preserve deterministic validator rejections and required fixes.
+  - Return `needs_review` when monetary policy evidence is missing or unclear.
+- These prompts reduce hallucination risk before deterministic validation runs.
+
 ## RAG Strategy
 
 - Policy RAG is implemented in `rag/`.

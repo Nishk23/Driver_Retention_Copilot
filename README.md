@@ -105,6 +105,16 @@ python -m evaluation.run_eval
 
 For Maria's repeated airport short-fare issue, the Strategist may initially propose a high-value recovery. The Critic enforces the UK policy: Gold airport short-fare compensation is capped at 25 GBP, and Silver/Bronze at 15 GBP. Over-cap compensation is rejected, the plan is revised, and the final response is approved only after validation.
 
+## Hallucination Controls
+
+The agent prompts in `agents/prompts.py` are written to keep model output grounded in the provided evidence:
+
+- The Strategist can use only the input payload: driver profile, support tickets, issue type, incentive options, and Critic feedback.
+- The Strategist is explicitly forbidden from inventing driver facts, policy rules, incentive IDs, quest names, ticket details, compensation amounts, cities, or tiers.
+- Monetary actions must use incentives present in `incentive_options`; otherwise the plan should use escalation, monitoring, manager follow-up, or manual review.
+- The Compliance Critic cannot approve assumptions, invented policy exceptions, unknown monetary actions, missing driver profiles, or unclear monetary policy evidence.
+- Deterministic validation in `tools/policy_validator.py` remains the final safety layer for policy caps and manual-review routing.
+
 ## MCP-Style Tooling
 
 `tools/` contains the actual business and data logic. `mcp_server/server.py` imports and exposes those same functions through FastMCP when available. It does not duplicate tool logic.
