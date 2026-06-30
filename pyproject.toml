@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "driver-retention-copilot"
+version = "0.1.0"
+description = "Policy-aware multi-agent driver retention copilot."
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.2.60,<0.4",
+    "pydantic>=2.8,<3",
+    "openai>=1.55,<2",
+    "python-dotenv>=1.0,<2",
+    "chromadb>=0.5.20,<0.7",
+    "sentence-transformers>=3.0,<4",
+    "pandas>=2.2,<3",
+    "pypdf>=5.0,<6",
+    "pdfplumber>=0.11,<1",
+    "streamlit>=1.40,<2",
+    "fastmcp>=2.0,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<9", "ruff>=0.8,<1"]
+
+[tool.setuptools.packages.find]
+include = ["agents*", "app*", "data*", "evaluation*", "graph*", "llm*", "mcp_server*", "rag*", "state*", "tools*"]
+
+[tool.setuptools.package-data]
+data = ["*.json", "*.csv", "*.pdf", "*.py"]
+rag = ["*.json"]
+evaluation = ["*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["evaluation"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"

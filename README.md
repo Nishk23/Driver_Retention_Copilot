@@ -32,8 +32,14 @@ The project follows the requested layout: `app/`, `agents/`, `graph/`, `llm/`, `
 cd driver-retention-copilot
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e ".[dev]"
 cp .env.example .env
+```
+
+`requirements.txt` is also provided for simple environments that prefer direct dependency installation:
+
+```bash
+pip install -r requirements.txt
 ```
 
 Fill in `.env`:
@@ -53,7 +59,9 @@ Embeddings use local `sentence-transformers`, not OpenRouter.
 python -m rag.ingest_policy
 ```
 
-If Chroma or sentence-transformers are not installed, the retriever falls back to deterministic keyword retrieval over the PDF text, but production/demo setup should run ingestion.
+The ingester creates section-level policy chunks with page metadata, so retrieval can return focused evidence for global caps, airport short fares, technical/GPS glitches, new-starter rules, and quest exceptions.
+
+If Chroma or sentence-transformers are not installed, the retriever falls back to deterministic keyword retrieval over the policy chunks, but production/demo setup should run ingestion.
 
 By default the runtime uses local keyword retrieval over the extracted policy chunks to avoid demo-time model download failures. Set `USE_CHROMA_RAG=true` in `.env` to force Chroma semantic retrieval after the embedding model is available locally.
 
@@ -113,7 +121,7 @@ The agent prompts in `agents/prompts.py` are written to keep model output ground
 - The Strategist is explicitly forbidden from inventing driver facts, policy rules, incentive IDs, quest names, ticket details, compensation amounts, cities, or tiers.
 - Monetary actions must use incentives present in `incentive_options`; otherwise the plan should use escalation, monitoring, manager follow-up, or manual review.
 - The Compliance Critic cannot approve assumptions, invented policy exceptions, unknown monetary actions, missing driver profiles, or unclear monetary policy evidence.
-- Deterministic validation in `tools/policy_validator.py` remains the final safety layer for policy caps and manual-review routing.
+- Deterministic validation in `tools/policy_validator.py` remains the final safety layer for policy caps, incentive-ID checks, short-fare eligibility evidence, and manual-review routing.
 
 ## MCP-Style Tooling
 
@@ -126,7 +134,7 @@ For this implementation, the graph calls local Python tool functions directly fo
 - The bundled dataset is small and London-only.
 - The production graph uses local tool calls rather than routing every tool call through MCP.
 - RAG has a keyword fallback for environments without Chroma installed.
-- The deterministic policy table currently covers the hard rules visible in the provided policy PDF.
+- The deterministic policy table covers the hard cap and manual-review rules visible in the provided policy PDF.
 - Live LLM behavior depends on the configured OpenRouter model.
 
 ## Future Improvements

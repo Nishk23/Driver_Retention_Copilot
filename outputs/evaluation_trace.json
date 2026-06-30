@@ -44,7 +44,9 @@
             "reason": "Proposed amount exceeds Airport Short Fare compensation cap."
           }
         ],
-        "warnings": [],
+        "warnings": [
+          "No explicit airport wait time found for short-fare eligibility."
+        ],
         "required_fixes": [
           "Reduce short_fare_credit to 25 GBP or below."
         ],
@@ -52,7 +54,7 @@
           {
             "page": 1,
             "chunk_id": "seeded",
-            "text": "Airport Short Fares GOLD TIER CAP: GBP 25.",
+            "text": "Synthetic airport short fare policy cap: Gold drivers max 25 GBP.",
             "score": null
           }
         ],
@@ -92,13 +94,15 @@
       "data": {
         "status": "approved",
         "violations": [],
-        "warnings": [],
+        "warnings": [
+          "No explicit airport wait time found for short-fare eligibility."
+        ],
         "required_fixes": [],
         "policy_evidence": [
           {
             "page": 1,
             "chunk_id": "seeded",
-            "text": "Airport Short Fares GOLD TIER CAP: GBP 25.",
+            "text": "Synthetic airport short fare policy cap: Gold drivers max 25 GBP.",
             "score": null
           }
         ],
@@ -147,7 +151,7 @@
         "issue_type": "airport_short_fare",
         "risk_level": "high",
         "incentive_options": {
-          "timestamp": "2026-06-18T17:36:24.083505",
+          "timestamp": "2026-06-30T17:24:23.079940",
           "city": "London",
           "driver_tier": "Gold",
           "tenure_months": 24,
@@ -220,9 +224,33 @@
         "retrieved_policy_chunks": [
           {
             "page": 1,
-            "chunk_id": "page-1-chunk-1",
-            "text": "FREENOW  Internal  Policy:  UK  Driver  Retention  &  Recovery  Guidelines  \nSection  A:  Compensation  Caps  &  Stacking  \n1.  Global  Monthly  Cap:  No  automated  retention  package  may  exceed  \u00a3150.00  in  total  \nvalue\n \nper\n \ndriver,\n \nper\n \ncalendar\n \nmonth.\n 2.  Credit  Stacking:  A  driver  may  not  receive  more  than  two  (2)  immediate  credits  \nwithin\n \nthe\n \nsame\n \n24-hour\n \nwindow.\n \nIf\n \na\n \nthird\n \nissue\n \noccurs,\n \nthe\n \nsystem\n \nmust\n \nescalate\n \nto\n \na\n \nhuman\n \nCity\n \nManager.\n 3.  Tier  Multipliers:  Goodwill  credits  (Category:  Churn)  are  strictly  reserved  for  Gold  \nand\n \nSilver\n \ntiers\n \nonly.\n \nSection  B:  Specific  Issue  Resolutions  \n1.  Airport  Short  Fares  (SFP):  *  Applicable  only  if  wait  time  >90  mins  and  trip  distance  \n<3km.\n \u25cb  GOLD  TIER  CAP:  \u00a325.00  maximum  per  instance.  (Note:  The  AI  must  NOT  \nuse\n INC-002 (\u00a350)  for  standard  short-fare  recovery;  that  is  reserved  for  \nmulti-day\n \nsystemic\n \nfailures).\n \u25cb  SILVER/BRONZE  CAP:  \u00a315.00  maximum  per  instance.  2.  Technical  &  GPS  Glitches:  *  Maximum  compensation  is  \u00a310.00  per  confirmed  glitch  \n(INC-003).  \u25cb  Priority  Support  Access  (INC-004)  should  be  offered  for  recurring  geofence  \nissues\n \n(>2\n \ntickets\n \nin\n \n7\n \ndays).\n 3.  New  Starters  (Tenure  <3  Months):  \u25cb  Priority  should  be  given  to  Commission  Shields  (INC-006)  rather  than  \ndirect\n \ncredits\n \nto\n \nencourage\n \ncontinued\n \napp\n \nusage.\n 4.  Infeasible  Quests:  \u25cb  If  a  driver  completes  >80%  of  a  Quest  but  fails  due  to  documented  low  \ndemand\n \n(diagnostics\n \nconfirm\n \n<1.5\n \noffers/hour),\n \na\n \nGoodwill\n \nGesture\n \nof\n \n\u00a320.00\n \nis\n \npermitted.",
-            "score": 13.0
+            "chunk_id": "page-1-chunk-4",
+            "text": "Section C: Airport Short Fares. Standard airport short fare recovery applies when the airport queue wait is greater than 90 minutes and the completed trip distance is below 3 km. Gold drivers may receive up to 25 GBP. Silver and Bronze drivers may receive up to 15 GBP. Do not use a premium multi-day systemic failure incentive for a single standard short fare case.",
+            "score": 12.0
+          },
+          {
+            "page": 1,
+            "chunk_id": "page-1-chunk-2",
+            "text": "Section A: Global Monthly Cap. Automated monetary recovery must not exceed 150 GBP per driver in a calendar month. If proposed compensation would exceed that amount, the case must be marked needs_review and routed to a manager.",
+            "score": 2.0
+          },
+          {
+            "page": 1,
+            "chunk_id": "page-1-chunk-6",
+            "text": "Section E: Technical & GPS Glitches. Confirmed platform, dispatch, queue, or geofence errors may receive up to 10 GBP for a verified incident. Recurring geofence problems should be escalated for technical investigation and may include priority support.",
+            "score": 1.0
+          },
+          {
+            "page": 1,
+            "chunk_id": "page-1-chunk-7",
+            "text": "Section F: New Starter Support. Drivers with tenure under 3 months should receive non- punitive support first. Use commission shields, coaching, or queue guidance before discretionary cash credits unless a hard eligibility rule is met.",
+            "score": 1.0
+          },
+          {
+            "page": 1,
+            "chunk_id": "page-1-chunk-9",
+            "text": "Section H: Non Monetary Actions. Manager messages, future quest support, monitoring, follow- up calls, and ticket escalation are allowed when they are consistent with the evidence and do not imply unverified compensation.",
+            "score": 1.0
           }
         ],
         "strategist_plan": {
@@ -282,9 +310,33 @@
           "policy_evidence": [
             {
               "page": 1,
-              "chunk_id": "page-1-chunk-1",
-              "text": "FREENOW  Internal  Policy:  UK  Driver  Retention  &  Recovery  Guidelines  \nSection  A:  Compensation  Caps  &  Stacking  \n1.  Global  Monthly  Cap:  No  automated  retention  package  may  exceed  \u00a3150.00  in  total  \nvalue\n \nper\n \ndriver,\n \nper\n \ncalendar\n \nmonth.\n 2.  Credit  Stacking:  A  driver  may  not  receive  more  than  two  (2)  immediate  credits  \nwithin\n \nthe\n \nsame\n \n24-hour\n \nwindow.\n \nIf\n \na\n \nthird\n \nissue\n \noccurs,\n \nthe\n \nsystem\n \nmust\n \nescalate\n \nto\n \na\n \nhuman\n \nCity\n \nManager.\n 3.  Tier  Multipliers:  Goodwill  credits  (Category:  Churn)  are  strictly  reserved  for  Gold  \nand\n \nSilver\n \ntiers\n \nonly.\n \nSection  B:  Specific  Issue  Resolutions  \n1.  Airport  Short  Fares  (SFP):  *  Applicable  only  if  wait  time  >90  mins  and  trip  distance  \n<3km.\n \u25cb  GOLD  TIER  CAP:  \u00a325.00  maximum  per  instance.  (Note:  The  AI  must  NOT  \nuse\n INC-002 (\u00a350)  for  standard  short-fare  recovery;  that  is  reserved  for  \nmulti-day\n \nsystemic\n \nfailures).\n \u25cb  SILVER/BRONZE  CAP:  \u00a315.00  maximum  per  instance.  2.  Technical  &  GPS  Glitches:  *  Maximum  compensation  is  \u00a310.00  per  confirmed  glitch  \n(INC-003).  \u25cb  Priority  Support  Access  (INC-004)  should  be  offered  for  recurring  geofence  \nissues\n \n(>2\n \ntickets\n \nin\n \n7\n \ndays).\n 3.  New  Starters  (Tenure  <3  Months):  \u25cb  Priority  should  be  given  to  Commission  Shields  (INC-006)  rather  than  \ndirect\n \ncredits\n \nto\n \nencourage\n \ncontinued\n \napp\n \nusage.\n 4.  Infeasible  Quests:  \u25cb  If  a  driver  completes  >80%  of  a  Quest  but  fails  due  to  documented  low  \ndemand\n \n(diagnostics\n \nconfirm\n \n<1.5\n \noffers/hour),\n \na\n \nGoodwill\n \nGesture\n \nof\n \n\u00a320.00\n \nis\n \npermitted.",
-              "score": 13.0
+              "chunk_id": "page-1-chunk-4",
+              "text": "Section C: Airport Short Fares. Standard airport short fare recovery applies when the airport queue wait is greater than 90 minutes and the completed trip distance is below 3 km. Gold drivers may receive up to 25 GBP. Silver and Bronze drivers may receive up to 15 GBP. Do not use a premium multi-day systemic failure incentive for a single standard short fare case.",
+              "score": 12.0
+            },
+            {
+              "page": 1,
+              "chunk_id": "page-1-chunk-2",
+              "text": "Section A: Global Monthly Cap. Automated monetary recovery must not exceed 150 GBP per driver in a calendar month. If proposed compensation would exceed that amount, the case must be marked needs_review and routed to a manager.",
+              "score": 2.0
+            },
+            {
+              "page": 1,
+              "chunk_id": "page-1-chunk-6",
+              "text": "Section E: Technical & GPS Glitches. Confirmed platform, dispatch, queue, or geofence errors may receive up to 10 GBP for a verified incident. Recurring geofence problems should be escalated for technical investigation and may include priority support.",
+              "score": 1.0
+            },
+            {
+              "page": 1,
+              "chunk_id": "page-1-chunk-7",
+              "text": "Section F: New Starter Support. Drivers with tenure under 3 months should receive non- punitive support first. Use commission shields, coaching, or queue guidance before discretionary cash credits unless a hard eligibility rule is met.",
+              "score": 1.0
+            },
+            {
+              "page": 1,
+              "chunk_id": "page-1-chunk-9",
+              "text": "Section H: Non Monetary Actions. Manager messages, future quest support, monitoring, follow- up calls, and ticket escalation are allowed when they are consistent with the evidence and do not imply unverified compensation.",
+              "score": 1.0
             }
           ],
           "explanation": "All monetary actions are within deterministic policy caps, and non-monetary actions are allowlisted or harmless."
@@ -338,7 +390,7 @@
           {
             "step": "incentive_retrieval",
             "data": {
-              "timestamp": "2026-06-18T17:36:24.083505",
+              "timestamp": "2026-06-30T17:24:23.079940",
               "city": "London",
               "driver_tier": "Gold",
               "tenure_months": 24,
@@ -478,9 +530,33 @@
               "policy_evidence": [
                 {
                   "page": 1,
-                  "chunk_id": "page-1-chunk-1",
-                  "text": "FREENOW  Internal  Policy:  UK  Driver  Retention  &  Recovery  Guidelines  \nSection  A:  Compensation  Caps  &  Stacking  \n1.  Global  Monthly  Cap:  No  automated  retention  package  may  exceed  \u00a3150.00  in  total  \nvalue\n \nper\n \ndriver,\n \nper\n \ncalendar\n \nmonth.\n 2.  Credit  Stacking:  A  driver  may  not  receive  more  than  two  (2)  immediate  credits  \nwithin\n \nthe\n \nsame\n \n24-hour\n \nwindow.\n \nIf\n \na\n \nthird\n \nissue\n \noccurs,\n \nthe\n \nsystem\n \nmust\n \nescalate\n \nto\n \na\n \nhuman\n \nCity\n \nManager.\n 3.  Tier  Multipliers:  Goodwill  credits  (Category:  Churn)  are  strictly  reserved  for  Gold  \nand\n \nSilver\n \ntiers\n \nonly.\n \nSection  B:  Specific  Issue  Resolutions  \n1.  Airport  Short  Fares  (SFP):  *  Applicable  only  if  wait  time  >90  mins  and  trip  distance  \n<3km.\n \u25cb  GOLD  TIER  CAP:  \u00a325.00  maximum  per  instance.  (Note:  The  AI  must  NOT  \nuse\n INC-002 (\u00a350)  for  standard  short-fare  recovery;  that  is  reserved  for  \nmulti-day\n \nsystemic\n \nfailures).\n \u25cb  SILVER/BRONZE  CAP:  \u00a315.00  maximum  per  instance.  2.  Technical  &  GPS  Glitches:  *  Maximum  compensation  is  \u00a310.00  per  confirmed  glitch  \n(INC-003).  \u25cb  Priority  Support  Access  (INC-004)  should  be  offered  for  recurring  geofence  \nissues\n \n(>2\n \ntickets\n \nin\n \n7\n \ndays).\n 3.  New  Starters  (Tenure  <3  Months):  \u25cb  Priority  should  be  given  to  Commission  Shields  (INC-006)  rather  than  \ndirect\n \ncredits\n \nto\n \nencourage\n \ncontinued\n \napp\n \nusage.\n 4.  Infeasible  Quests:  \u25cb  If  a  driver  completes  >80%  of  a  Quest  but  fails  due  to  documented  low  \ndemand\n \n(diagnostics\n \nconfirm\n \n<1.5\n \noffers/hour),\n \na\n \nGoodwill\n \nGesture\n \nof\n \n\u00a320.00\n \nis\n \npermitted.",
-                  "score": 13.0
+                  "chunk_id": "page-1-chunk-4",
+                  "text": "Section C: Airport Short Fares. Standard airport short fare recovery applies when the airport queue wait is greater than 90 minutes and the completed trip distance is below 3 km. Gold drivers may receive up to 25 GBP. Silver and Bronze drivers may receive up to 15 GBP. Do not use a premium multi-day systemic failure incentive for a single standard short fare case.",
+                  "score": 12.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-2",
+                  "text": "Section A: Global Monthly Cap. Automated monetary recovery must not exceed 150 GBP per driver in a calendar month. If proposed compensation would exceed that amount, the case must be marked needs_review and routed to a manager.",
+                  "score": 2.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-6",
+                  "text": "Section E: Technical & GPS Glitches. Confirmed platform, dispatch, queue, or geofence errors may receive up to 10 GBP for a verified incident. Recurring geofence problems should be escalated for technical investigation and may include priority support.",
+                  "score": 1.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-7",
+                  "text": "Section F: New Starter Support. Drivers with tenure under 3 months should receive non- punitive support first. Use commission shields, coaching, or queue guidance before discretionary cash credits unless a hard eligibility rule is met.",
+                  "score": 1.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-9",
+                  "text": "Section H: Non Monetary Actions. Manager messages, future quest support, monitoring, follow- up calls, and ticket escalation are allowed when they are consistent with the evidence and do not imply unverified compensation.",
+                  "score": 1.0
                 }
               ],
               "explanation": "One or more actions violate deterministic policy caps."
@@ -555,9 +631,33 @@
               "policy_evidence": [
                 {
                   "page": 1,
-                  "chunk_id": "page-1-chunk-1",
-                  "text": "FREENOW  Internal  Policy:  UK  Driver  Retention  &  Recovery  Guidelines  \nSection  A:  Compensation  Caps  &  Stacking  \n1.  Global  Monthly  Cap:  No  automated  retention  package  may  exceed  \u00a3150.00  in  total  \nvalue\n \nper\n \ndriver,\n \nper\n \ncalendar\n \nmonth.\n 2.  Credit  Stacking:  A  driver  may  not  receive  more  than  two  (2)  immediate  credits  \nwithin\n \nthe\n \nsame\n \n24-hour\n \nwindow.\n \nIf\n \na\n \nthird\n \nissue\n \noccurs,\n \nthe\n \nsystem\n \nmust\n \nescalate\n \nto\n \na\n \nhuman\n \nCity\n \nManager.\n 3.  Tier  Multipliers:  Goodwill  credits  (Category:  Churn)  are  strictly  reserved  for  Gold  \nand\n \nSilver\n \ntiers\n \nonly.\n \nSection  B:  Specific  Issue  Resolutions  \n1.  Airport  Short  Fares  (SFP):  *  Applicable  only  if  wait  time  >90  mins  and  trip  distance  \n<3km.\n \u25cb  GOLD  TIER  CAP:  \u00a325.00  maximum  per  instance.  (Note:  The  AI  must  NOT  \nuse\n INC-002 (\u00a350)  for  standard  short-fare  recovery;  that  is  reserved  for  \nmulti-day\n \nsystemic\n \nfailures).\n \u25cb  SILVER/BRONZE  CAP:  \u00a315.00  maximum  per  instance.  2.  Technical  &  GPS  Glitches:  *  Maximum  compensation  is  \u00a310.00  per  confirmed  glitch  \n(INC-003).  \u25cb  Priority  Support  Access  (INC-004)  should  be  offered  for  recurring  geofence  \nissues\n \n(>2\n \ntickets\n \nin\n \n7\n \ndays).\n 3.  New  Starters  (Tenure  <3  Months):  \u25cb  Priority  should  be  given  to  Commission  Shields  (INC-006)  rather  than  \ndirect\n \ncredits\n \nto\n \nencourage\n \ncontinued\n \napp\n \nusage.\n 4.  Infeasible  Quests:  \u25cb  If  a  driver  completes  >80%  of  a  Quest  but  fails  due  to  documented  low  \ndemand\n \n(diagnostics\n \nconfirm\n \n<1.5\n \noffers/hour),\n \na\n \nGoodwill\n \nGesture\n \nof\n \n\u00a320.00\n \nis\n \npermitted.",
-                  "score": 13.0
+                  "chunk_id": "page-1-chunk-4",
+                  "text": "Section C: Airport Short Fares. Standard airport short fare recovery applies when the airport queue wait is greater than 90 minutes and the completed trip distance is below 3 km. Gold drivers may receive up to 25 GBP. Silver and Bronze drivers may receive up to 15 GBP. Do not use a premium multi-day systemic failure incentive for a single standard short fare case.",
+                  "score": 12.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-2",
+                  "text": "Section A: Global Monthly Cap. Automated monetary recovery must not exceed 150 GBP per driver in a calendar month. If proposed compensation would exceed that amount, the case must be marked needs_review and routed to a manager.",
+                  "score": 2.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-6",
+                  "text": "Section E: Technical & GPS Glitches. Confirmed platform, dispatch, queue, or geofence errors may receive up to 10 GBP for a verified incident. Recurring geofence problems should be escalated for technical investigation and may include priority support.",
+                  "score": 1.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-7",
+                  "text": "Section F: New Starter Support. Drivers with tenure under 3 months should receive non- punitive support first. Use commission shields, coaching, or queue guidance before discretionary cash credits unless a hard eligibility rule is met.",
+                  "score": 1.0
+                },
+                {
+                  "page": 1,
+                  "chunk_id": "page-1-chunk-9",
+                  "text": "Section H: Non Monetary Actions. Manager messages, future quest support, monitoring, follow- up calls, and ticket escalation are allowed when they are consistent with the evidence and do not imply unverified compensation.",
+                  "score": 1.0
                 }
               ],
               "explanation": "All monetary actions are within deterministic policy caps, and non-monetary actions are allowlisted or harmless."

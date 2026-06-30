@@ -1,23 +1,9 @@
-import importlib.util
-from pathlib import Path
-
+from data.incentive_service_mock import IncentiveService
 from tools.driver_profile_tool import get_driver_profile
 
 
-SERVICE_PATH = Path(__file__).resolve().parents[1] / "data" / "incentive_service_mock.py"
-
-
-def _load_service_class():
-    spec = importlib.util.spec_from_file_location("incentive_service_mock", SERVICE_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError("Unable to load incentive_service_mock.py.")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return getattr(module, "IncentiveService")
-
-
 def _service():
-    return _load_service_class()()
+    return IncentiveService()
 
 
 def _filter_by_issue(incentives: list[dict], issue_type: str | None) -> list[dict]:

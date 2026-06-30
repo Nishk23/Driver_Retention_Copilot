@@ -14,7 +14,13 @@ OUTPUT = ROOT / "outputs" / "evaluation_trace.json"
 
 def _seeded_self_correction() -> dict:
     invalid = json.loads((ROOT / "evaluation" / "seeded_invalid_plan.json").read_text())
-    policy_chunks = [{"page": 1, "chunk_id": "seeded", "text": "Airport Short Fares GOLD TIER CAP: GBP 25."}]
+    policy_chunks = [
+        {
+            "page": 1,
+            "chunk_id": "seeded",
+            "text": "Synthetic airport short fare policy cap: Gold drivers max 25 GBP.",
+        }
+    ]
     rejected = validate_plan_against_policy(invalid, policy_chunks)
 
     revised = copy.deepcopy(invalid)

@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from pathlib import Path
 
 from rag.vector_store import load_or_create_vector_store
@@ -24,17 +25,52 @@ def extract_pdf_text(pdf_path: str) -> list[dict]:
     return pages
 
 
-def chunk_text(text: str, chunk_size: int = 2600, overlap: int = 400) -> list[str]:
+def _clean_policy_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text or "").strip()
+
+
+def _split_long_segment(segment: str, max_chars: int) -> list[str]:
+    if len(segment) <= max_chars:
+        return [segment]
+
+    sentences = re.split(r"(?<=[.)])\s+", segment)
     chunks: list[str] = []
-    start = 0
-    while start < len(text):
-        end = min(len(text), start + chunk_size)
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
-        if end >= len(text):
-            break
-        start = max(0, end - overlap)
+    current = ""
+    for sentence in sentences:
+        candidate = f"{current} {sentence}".strip()
+        if current and len(candidate) > max_chars:
+            chunks.append(current)
+            current = sentence
+        else:
+            current = candidate
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def chunk_text(text: str, max_chars: int = 700) -> list[str]:
+    clean = _clean_policy_text(text)
+    if not clean:
+        return []
+
+    starts = [
+        match.start()
+        for match in re.finditer(r"(?:Section\s+[A-Z]:|\s\d+\.\s+[A-Z])", clean)
+    ]
+    if not starts:
+        return _split_long_segment(clean, max_chars)
+
+    chunks: list[str] = []
+    if starts[0] > 0:
+        title = clean[: starts[0]].strip()
+        if title:
+            chunks.append(title)
+
+    for index, start in enumerate(starts):
+        end = starts[index + 1] if index + 1 < len(starts) else len(clean)
+        segment = clean[start:end].strip()
+        if segment:
+            chunks.extend(_split_long_segment(segment, max_chars))
     return chunks
 
 

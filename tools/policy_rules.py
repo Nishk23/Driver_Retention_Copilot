@@ -1,4 +1,10 @@
 POLICY_CAPS = {
+    "global_monthly": {
+        "max_amount": 150.0,
+        "currency": "GBP",
+        "policy_query": "global monthly cap automated retention package total value driver calendar month",
+        "description": "Global monthly automated retention cap",
+    },
     "short_fare_credit": {
         "max_amount": 25.0,
         "tier_caps": {"Gold": 25.0, "Silver": 15.0, "Bronze": 15.0},

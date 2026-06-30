@@ -6,6 +6,7 @@
 .venv/
 venv/
 env/
+design_doc.pdf
 __pycache__/
 *.py[cod]
 .DS_Store

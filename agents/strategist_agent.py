@@ -1,5 +1,6 @@
 import json
 
+from agents.action_normalizer import normalize_plan_actions
 from agents.prompts import STRATEGIST_SYSTEM_PROMPT
 from llm.json_utils import parse_json_response
 from llm.llm_client import call_llm
@@ -181,56 +182,7 @@ def generate_retention_plan(state: DriverCopilotState) -> RetentionPlan:
         if parsed.get("status") == "needs_review":
             raise ValueError(parsed.get("error", "LLM JSON parse failed."))
 
-        # Normalize action_type values from the LLM to canonical types used
-        # by the system so downstream validators can operate deterministically.
-        def _normalize_plan_actions(parsed_plan: dict) -> dict:
-            mapped = []
-            issue_type = parsed_plan.get("issue_type")
-            for action in (parsed_plan.get("proposed_actions") or []):
-                at = (action.get("action_type") or "").lower()
-                incentive = action.get("incentive_id") or ""
-                new_at = at
-
-                non_monetary_map = {
-                    "voucher": "future_quest",
-                    "fast_track": "future_quest",
-                    "airport_fast_track": "future_quest",
-                    "queue_fast_track": "future_quest",
-                    "queue_fast_track_voucher": "future_quest",
-                    "ticket_response": "support_escalation",
-                    "ticket_reply": "support_escalation",
-                    "outreach_call": "follow_up_call",
-                    "follow_up": "follow_up_call",
-                    "follow_up_call": "follow_up_call",
-                    "operations_escalation": "support_escalation",
-                    "escalate": "support_escalation",
-                    "escalate_ticket": "support_escalation",
-                    "flag_account": "support_escalation",
-                    "acknowledge": "manager_message",
-                    "apology": "apology_message",
-                    "monitoring": "monitor_driver",
-                    "monitor": "monitor_driver",
-                    "monitor_driver": "monitor_driver",
-                }
-                monetary_synonyms = {"credit", "incentive_credit", "incentive", "goodwill", "cash_credit", "compensation"}
-                short_fare_ids = {"INC-001", "INC-002"}
-                if at in non_monetary_map:
-                    new_at = non_monetary_map[at]
-                elif at in monetary_synonyms or action.get("amount") is not None:
-                    if incentive in short_fare_ids or issue_type == "airport_short_fare":
-                        new_at = "short_fare_credit"
-                    else:
-                        new_at = "goodwill_credit"
-
-                new_action = dict(action)
-                new_action["action_type"] = new_at
-                mapped.append(new_action)
-
-            new_parsed = dict(parsed_plan)
-            new_parsed["proposed_actions"] = mapped
-            return new_parsed
-
-        parsed = _normalize_plan_actions(parsed)
+        parsed = normalize_plan_actions(parsed)
         parsed = _apply_deterministic_revision(parsed, state)
         return RetentionPlan.model_validate(parsed)
     except Exception:

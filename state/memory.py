@@ -4,7 +4,8 @@ from pathlib import Path
 from typing import Any
 
 
-MEMORY_DIR = Path("outputs/memory")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+MEMORY_DIR = PROJECT_ROOT / "outputs" / "memory"
 
 
 def _memory_path(session_id: str) -> Path:
